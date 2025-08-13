@@ -37,6 +37,20 @@ app.get("/", (_, res: Response) =>
   res.sendFile(path.join(__dirname, "public", "index.html"))
 );
 
+import { roleRouter } from "./@entities/role";
+import { trimStringFields } from "./middlewares/trim";
+import { userRouter } from "./@entities/user";
+
+app.use((req, res, next) => {
+  if (req.method === "POST" || req.method === "PUT") {
+    return trimStringFields(req, res, next);
+  }
+  next();
+});
+
+app.use("/api/v1/role", roleRouter);
+app.use("/api/v1/user", userRouter);
+
 // Notfound and error middlewares
 app.use(pageNotFound);
 app.use(errorMiddleware);
