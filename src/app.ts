@@ -41,6 +41,7 @@ import { roleRouter } from "./@entities/role";
 import { trimStringFields } from "./middlewares/trim";
 import { userRouter } from "./@entities/user";
 import { adminRouter } from "./@entities/admin";
+import { getNewAccessToken } from "./middlewares/auth";
 
 app.use((req, res, next) => {
   if (req.method === "POST" || req.method === "PUT") {
@@ -52,6 +53,8 @@ app.use((req, res, next) => {
 app.use("/api/v1/role", roleRouter);
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/admin", adminRouter);
+
+app.get("/api/v1/new-access-token", getNewAccessToken);
 
 // Notfound and error middlewares
 app.use(pageNotFound);
