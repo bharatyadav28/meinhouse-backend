@@ -50,3 +50,8 @@ export const createUserSchema = createInsertSchema(User).omit({
   deletedAt: true,
   isDeleted: true,
 });
+
+export const signinUserSchema = createInsertSchema(User).pick({
+  email: true,
+  password: true,
+});

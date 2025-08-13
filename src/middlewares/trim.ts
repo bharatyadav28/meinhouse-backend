@@ -5,7 +5,6 @@ export const trimStringFields = (
   res: Response,
   next: NextFunction
 ) => {
-  console.log("Trim !!!!!!!!!!!!", req.body);
   const trimObject = (obj: any): any => {
     if (obj === null || obj === undefined) return obj;
 
@@ -32,6 +31,5 @@ export const trimStringFields = (
     req.body = trimObject(req.body);
   }
 
-  console.log("complete", "asa");
   next();
 };
