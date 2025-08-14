@@ -34,7 +34,7 @@ const istLogger = morgan((tokens, req, res) => {
 app.use(istLogger);
 
 app.get("/", (_, res: Response) =>
-  res.sendFile(path.join(__dirname, "public", "index.html"))
+  res.sendFile(path.join(__dirname, "../public", "index.html"))
 );
 
 import { roleRouter } from "./@entities/role";
