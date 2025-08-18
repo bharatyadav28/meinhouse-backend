@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+
 import { verifyEmailPass } from "../user/user.service";
 
 export const adminSignin = async (req: Request, res: Response) => {
