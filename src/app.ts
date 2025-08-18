@@ -42,6 +42,7 @@ import { trimStringFields } from "./middlewares/trim";
 import { userRouter } from "./@entities/user";
 import { adminRouter } from "./@entities/admin";
 import { carousalRouter } from "./@entities/carousal";
+import { clientReviewRouter } from "./@entities/client_reviews";
 import { getNewAccessToken } from "./middlewares/auth";
 
 app.use((req, res, next) => {
@@ -55,6 +56,7 @@ app.use("/api/v1/role", roleRouter);
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/carousal", carousalRouter);
+app.use("/api/v1/client-reviews", clientReviewRouter);
 
 app.get("/api/v1/new-access-token", getNewAccessToken);
 

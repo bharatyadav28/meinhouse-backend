@@ -1,0 +1,1 @@
+ALTER TABLE "client_reviews" ALTER COLUMN "name" SET NOT NULL;

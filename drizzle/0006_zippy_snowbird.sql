@@ -1,0 +1,1 @@
+ALTER TABLE "carousal" ADD COLUMN "title" varchar(100) NOT NULL;

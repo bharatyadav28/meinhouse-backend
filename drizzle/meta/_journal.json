@@ -29,6 +29,27 @@
       "when": 1755499522448,
       "tag": "0003_dear_psynapse",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1755507319555,
+      "tag": "0004_mysterious_red_ghost",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1755507919825,
+      "tag": "0005_cute_galactus",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1755508743640,
+      "tag": "0006_zippy_snowbird",
+      "breakpoints": true
     }
   ]
 }

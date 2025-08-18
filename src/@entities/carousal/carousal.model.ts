@@ -7,7 +7,10 @@ export const Carousal = pgTable("carousal", {
     .primaryKey()
     .notNull()
     .$defaultFn(() => nanoid(21)),
+
   type: varchar("type").notNull(),
+
+  title: varchar("title", { length: 100 }).notNull(),
 
   image_path: varchar("image_path").notNull(),
 
