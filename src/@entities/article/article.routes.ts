@@ -5,6 +5,7 @@ import {
   getArticles,
   updateArticle,
   deleteArticle,
+  getArticleDetails,
 } from "./article.controller";
 import { createArticleSchema } from "./article.model";
 import { validateData } from "../../middlewares/validation";
@@ -16,9 +17,11 @@ articleRouter
   .route("/")
   .post(isAdmin, validateData(createArticleSchema), createArticle)
   .get(getArticles);
+
 articleRouter
   .route("/:id")
   .put(isAdmin, validateData(createArticleSchema), updateArticle)
-  .delete(isAdmin, deleteArticle);
+  .delete(isAdmin, deleteArticle)
+  .get(getArticleDetails);
 
 export default articleRouter;

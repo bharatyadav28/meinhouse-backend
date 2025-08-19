@@ -3,6 +3,7 @@ import { desc, eq } from "drizzle-orm";
 
 import { db } from "../../db";
 import { Article } from "./article.model";
+import de from "zod/v4/locales/de.js";
 
 export const createArticle = async (req: Request, res: Response) => {
   const data = req.cleanBody;
@@ -19,7 +20,11 @@ export const createArticle = async (req: Request, res: Response) => {
 
 export const getArticles = async (req: Request, res: Response) => {
   const articles = await db
-    .select()
+    .select({
+      id: Article.id,
+      title: Article.title,
+      description: Article.description,
+    })
     .from(Article)
     .orderBy(desc(Article.createdAt));
 
@@ -27,6 +32,29 @@ export const getArticles = async (req: Request, res: Response) => {
     success: true,
     message: "Articles fetched successfully",
     data: { articles },
+  });
+};
+
+export const getArticleDetails = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const article = await db
+    .select()
+    .from(Article)
+    .where(eq(Article.id, id))
+    .limit(1);
+
+  if (!article || article.length === 0) {
+    return res.status(404).json({
+      success: false,
+      message: "Article not found",
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "Article fetched successfully",
+    data: { article: article[0] },
   });
 };
 
