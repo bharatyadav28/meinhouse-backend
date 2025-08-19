@@ -10,7 +10,7 @@ export const Article = pgTable("article", {
     .notNull()
     .$defaultFn(() => nanoid(21)),
 
-  pic_path: varchar("pic_path"),
+  picPath: varchar("pic_path"),
 
   author: varchar("author", { length: 100 }).notNull(),
 

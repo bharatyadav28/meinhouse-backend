@@ -10,3 +10,23 @@ export const generateUniqueId = () => {
   const uuid = uuidv4();
   return uuid;
 };
+
+export const getURLPath = (url: string) => {
+  if (url.startsWith("/")) {
+    return url;
+  }
+
+  if (!url.includes("://")) {
+    return `/${url}`;
+  }
+
+  // If it's a full URL, extract the pathname
+  try {
+    const urlObject = new URL(url);
+    const path = urlObject.pathname;
+    return path.startsWith("/") ? path : `/${path}`;
+  } catch (error) {
+    // Fallback: treat as relative path
+    return url.startsWith("/") ? url : `/${url}`;
+  }
+};

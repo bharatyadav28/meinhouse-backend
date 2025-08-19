@@ -4,21 +4,23 @@ import { URL } from "url";
 import { db } from "../../db";
 import { Carousal } from "./carousal.model";
 import { and, asc, eq } from "drizzle-orm";
+import { BadRequestError } from "../../errors";
+import { getURLPath } from "../../helpers/utils";
 
 export const saveHomeCarousalItem = async (req: Request, res: Response) => {
-  const { imageUrl, title } = req.body;
+  const { imagePath, title } = req.body;
 
-  const urlObject = new URL(imageUrl);
-  const imagePath = urlObject.pathname;
+  if (!imagePath || !title) {
+    throw new BadRequestError("Image path and title are required");
+  }
 
-  const savedItem = await db
-    .insert(Carousal)
-    .values({
-      type: "home",
-      image_path: imagePath,
-      title: title,
-    })
-    .returning();
+  const data = {
+    type: "home",
+    imagePath: getURLPath(imagePath),
+    title,
+  };
+
+  const savedItem = await db.insert(Carousal).values(data).returning();
 
   if (!savedItem || savedItem?.length === 0) {
     throw new Error("Failed to save image");
@@ -34,7 +36,7 @@ export const getHomeCarousal = async (req: Request, res: Response) => {
   const carousals = await db
     .select({
       id: Carousal.id,
-      image_path: Carousal.image_path,
+      imagePath: Carousal.imagePath,
       title: Carousal.title,
     })
     .from(Carousal)
@@ -49,21 +51,20 @@ export const getHomeCarousal = async (req: Request, res: Response) => {
 };
 
 export const updateHomeCarousalItem = async (req: Request, res: Response) => {
-  const { imageUrl, title } = req.body;
+  const { imagePath, title } = req.body;
   const itemId = req.params.id;
 
-  const urlObject = new URL(imageUrl);
-  const imagePath = urlObject.pathname;
+  const data = {
+    type: "home",
+    imagePath: getURLPath(imagePath),
+    title,
+  };
 
   console.log("Image path", imagePath);
 
   const updatedItem = await db
     .update(Carousal)
-    .set({
-      image_path: imagePath,
-      title: title,
-      type: "home",
-    })
+    .set(data)
     .where(eq(Carousal.id, itemId))
     .returning();
 

@@ -4,11 +4,18 @@ import { desc, eq } from "drizzle-orm";
 import { db } from "../../db";
 import { Article } from "./article.model";
 import de from "zod/v4/locales/de.js";
+import { getURLPath } from "../../helpers/utils";
 
 export const createArticle = async (req: Request, res: Response) => {
   const data = req.cleanBody;
+  const newData = { ...data };
 
-  const article = await db.insert(Article).values(data).returning();
+  if (data?.picPath) {
+    let picPath = getURLPath(data.picPath);
+    newData.picPath = picPath;
+  }
+
+  const article = await db.insert(Article).values(newData).returning();
   if (!article || article.length === 0) {
     throw new Error("Failed to create article");
   }
@@ -24,6 +31,7 @@ export const getArticles = async (req: Request, res: Response) => {
       id: Article.id,
       title: Article.title,
       description: Article.description,
+      picPath: Article.picPath,
     })
     .from(Article)
     .orderBy(desc(Article.createdAt));
@@ -62,6 +70,11 @@ export const updateArticle = async (req: Request, res: Response) => {
   const { id } = req.params;
   const data = req.cleanBody;
   const updatedData = { ...data, updatedAt: new Date() };
+
+  if (data?.picPath) {
+    let picPath = getURLPath(data.picPath);
+    updatedData.picPath = picPath;
+  }
 
   const article = await db
     .update(Article)

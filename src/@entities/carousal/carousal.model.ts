@@ -12,7 +12,7 @@ export const Carousal = pgTable("carousal", {
 
   title: varchar("title", { length: 100 }).notNull(),
 
-  image_path: varchar("image_path").notNull(),
+  imagePath: varchar("image_path").notNull(),
 
   ...min_timestamps,
 });

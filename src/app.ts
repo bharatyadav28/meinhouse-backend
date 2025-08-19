@@ -44,6 +44,8 @@ import { adminRouter } from "./@entities/admin";
 import { carousalRouter } from "./@entities/carousal";
 import { clientReviewRouter } from "./@entities/client_reviews";
 import { articleRouter } from "./@entities/article";
+import { compServicesRouter } from "./@entities/comp_services";
+import { compServicesReqRouter } from "./@entities/comp_services_req";
 import { getNewAccessToken } from "./middlewares/auth";
 
 app.use((req, res, next) => {
@@ -59,6 +61,8 @@ app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/carousal", carousalRouter);
 app.use("/api/v1/client-reviews", clientReviewRouter);
 app.use("/api/v1/article", articleRouter);
+app.use("/api/v1/comp-services", compServicesRouter);
+app.use("/api/v1/comp-services-req", compServicesReqRouter);
 
 app.get("/api/v1/new-access-token", getNewAccessToken);
 
