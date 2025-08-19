@@ -50,6 +50,20 @@
       "when": 1755508743640,
       "tag": "0006_zippy_snowbird",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1755580771242,
+      "tag": "0007_fuzzy_albert_cleary",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1755581085692,
+      "tag": "0008_clammy_excalibur",
+      "breakpoints": true
     }
   ]
 }

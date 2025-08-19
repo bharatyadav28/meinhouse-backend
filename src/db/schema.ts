@@ -2,3 +2,4 @@ export { Role } from "../@entities/role/role.model";
 export { User } from "../@entities/user/user.model";
 export { Carousal } from "../@entities/carousal/carousal.model";
 export { ClientReview } from "../@entities/client_reviews/client_reviews.model";
+export { Article } from "../@entities/article/article.model";

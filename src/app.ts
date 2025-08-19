@@ -43,6 +43,7 @@ import { userRouter } from "./@entities/user";
 import { adminRouter } from "./@entities/admin";
 import { carousalRouter } from "./@entities/carousal";
 import { clientReviewRouter } from "./@entities/client_reviews";
+import { articleRouter } from "./@entities/article";
 import { getNewAccessToken } from "./middlewares/auth";
 
 app.use((req, res, next) => {
@@ -57,6 +58,7 @@ app.use("/api/v1/user", userRouter);
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/carousal", carousalRouter);
 app.use("/api/v1/client-reviews", clientReviewRouter);
+app.use("/api/v1/article", articleRouter);
 
 app.get("/api/v1/new-access-token", getNewAccessToken);
 
