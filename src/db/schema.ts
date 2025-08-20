@@ -8,3 +8,4 @@ export {
   CompServicesReq,
   compServiceStatusEnum,
 } from "../@entities/comp_services_req/comp_services_req.model";
+export { Query } from "../@entities/query/query.model";
