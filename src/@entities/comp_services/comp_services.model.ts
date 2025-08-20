@@ -1,6 +1,5 @@
 import { pgTable, varchar, text } from "drizzle-orm/pg-core";
 import { nanoid } from "nanoid";
-import { createInsertSchema } from "drizzle-zod";
 
 import { timestamps } from "../../helpers/columns";
 

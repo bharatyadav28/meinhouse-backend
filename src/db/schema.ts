@@ -4,3 +4,7 @@ export { Carousal } from "../@entities/carousal/carousal.model";
 export { ClientReview } from "../@entities/client_reviews/client_reviews.model";
 export { Article } from "../@entities/article/article.model";
 export { CompServices } from "../@entities/comp_services/comp_services.model";
+export {
+  CompServicesReq,
+  compServiceStatusEnum,
+} from "../@entities/comp_services_req/comp_services_req.model";

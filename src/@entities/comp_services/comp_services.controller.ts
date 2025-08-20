@@ -32,6 +32,7 @@ export const getCompServices = async (req: Request, res: Response) => {
       id: CompServices.id,
       picPath: CompServices.picPath,
       name: CompServices.name,
+      description: CompServices.description,
     })
     .from(CompServices)
     .where(eq(CompServices.isDeleted, false));
@@ -63,6 +64,8 @@ export const updateCompService = async (req: Request, res: Response) => {
   if (!service || service.length === 0) {
     throw new Error("Failed to update company service");
   }
+
+  console.log("Service", service);
 
   res.status(200).json({
     success: true,
