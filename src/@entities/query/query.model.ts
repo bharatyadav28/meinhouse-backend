@@ -3,7 +3,7 @@ import { nanoid } from "nanoid";
 import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 
-import { min_timestamps } from "../../helpers/columns";
+import { timestamps } from "../../helpers/columns";
 
 export const Query = pgTable(
   "query",
@@ -19,7 +19,7 @@ export const Query = pgTable(
 
     message: text("message").notNull(),
 
-    ...min_timestamps,
+    ...timestamps,
   },
   (table) => [
     check(
@@ -33,4 +33,6 @@ export const createQuerySchema = createInsertSchema(Query).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+  deletedAt: true,
+  isDeleted: true,
 });
