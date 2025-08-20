@@ -47,6 +47,7 @@ import { articleRouter } from "./@entities/article";
 import { compServicesRouter } from "./@entities/comp_services";
 import { compServicesReqRouter } from "./@entities/comp_services_req";
 import { queryRouter } from "./@entities/query";
+import { pagesRouter } from "./@entities/pages";
 import { getNewAccessToken } from "./middlewares/auth";
 
 app.use((req, res, next) => {
@@ -65,6 +66,7 @@ app.use("/api/v1/article", articleRouter);
 app.use("/api/v1/comp-services", compServicesRouter);
 app.use("/api/v1/comp-services-req", compServicesReqRouter);
 app.use("/api/v1/query", queryRouter);
+app.use("/api/v1/pages", pagesRouter);
 
 app.get("/api/v1/new-access-token", getNewAccessToken);
 
