@@ -25,3 +25,10 @@ export const createPagesSchema = createInsertSchema(Pages).omit({
   createdAt: true,
   updatedAt: true,
 });
+
+export const updatePagesSchema = createInsertSchema(Pages).omit({
+  id: true,
+  title: true,
+  createdAt: true,
+  updatedAt: true,
+});

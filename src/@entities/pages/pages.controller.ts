@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 
 import { db } from "../../db";
 import { Pages } from "./pages.model";
@@ -49,7 +49,12 @@ export const getTermsAndConditionsPage = async (
   const termsPage = await db
     .select()
     .from(Pages)
-    .where(sql`${Pages.title} ILIKE ${"%Terms and Conditions%"}`)
+    .where(
+      and(
+        sql`${Pages.title} ILIKE ${"%Terms and Conditions%"}`,
+        eq(Pages.status, "active")
+      )
+    )
     .limit(1)
     .execute();
 
@@ -59,22 +64,48 @@ export const getTermsAndConditionsPage = async (
       .json({ message: "Terms and Conditions page not found" });
   }
 
-  return res.status(200).json({ success: true, data: termsPage[0] });
+  return res
+    .status(200)
+    .json({ success: true, data: { content: termsPage[0] } });
 };
 
 export const getPrivacyPolicy = async (req: Request, res: Response) => {
-  const termsPage = await db
+  const privacyPolicyPage = await db
     .select()
     .from(Pages)
-    .where(sql`${Pages.title} ILIKE ${"%Privacy Policy%"}`)
+    .where(
+      and(
+        sql`${Pages.title} ILIKE ${"%Privacy Policy%"}`,
+        eq(Pages.status, "active")
+      )
+    )
     .limit(1)
     .execute();
 
-  if (!termsPage || termsPage.length === 0) {
-    return res
-      .status(404)
-      .json({ message: "Terms and Conditions page not found" });
+  if (!privacyPolicyPage || privacyPolicyPage.length === 0) {
+    return res.status(404).json({ message: "Privacy Policy page not found" });
   }
 
-  return res.status(200).json({ success: true, data: termsPage[0] });
+  return res
+    .status(200)
+    .json({ success: true, data: { content: privacyPolicyPage[0] } });
+};
+
+export const getAboutUs = async (req: Request, res: Response) => {
+  const aboutUsPage = await db
+    .select()
+    .from(Pages)
+    .where(
+      and(sql`${Pages.title} ILIKE ${"%About Us%"}`, eq(Pages.status, "active"))
+    )
+    .limit(1)
+    .execute();
+
+  if (!aboutUsPage || aboutUsPage.length === 0) {
+    return res.status(404).json({ message: "About Us page not found" });
+  }
+
+  return res
+    .status(200)
+    .json({ success: true, data: { content: aboutUsPage[0] } });
 };

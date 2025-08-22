@@ -6,10 +6,11 @@ import {
   updatePage,
   getTermsAndConditionsPage,
   getPrivacyPolicy,
+  getAboutUs,
 } from "./pages.controller";
 import { isAdmin } from "../../middlewares/auth";
 import { validateData } from "../../middlewares/validation";
-import { createPagesSchema } from "./pages.model";
+import { createPagesSchema, updatePagesSchema } from "./pages.model";
 
 const pagesRouter = express.Router();
 
@@ -20,9 +21,10 @@ pagesRouter
 
 pagesRouter
   .route("/:id")
-  .put(isAdmin, validateData(createPagesSchema), updatePage);
+  .put(isAdmin, validateData(updatePagesSchema), updatePage);
 
 pagesRouter.route("/terms-and-conditions").get(getTermsAndConditionsPage);
 pagesRouter.route("/privacy-policy").get(getPrivacyPolicy);
+pagesRouter.route("/about-us").get(getAboutUs);
 
 export default pagesRouter;
