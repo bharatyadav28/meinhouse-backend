@@ -7,7 +7,7 @@ const minTime = 60 * 60 * 24;
 const maxTime = 60 * 60 * 24 * 7;
 // const maxTime = 10;
 
-const tempTime = 60 * 5; //  5 min
+const tempTime = 60 * 15; //  15 min
 
 export const generateAccessToken = (payload: payloadType) => {
   const secret = process.env.ACCESS_SECRET;
@@ -31,11 +31,22 @@ export const generateRefreshToken = (payload: payloadType) => {
   return null;
 };
 
+export const generateTemporaryToken = (payload: payloadType) => {
+  const secret = process.env.TEMP_SECRET;
+  if (secret) {
+    const token = jwt.sign(payload, secret, {
+      expiresIn: tempTime,
+    });
+    return token;
+  }
+  return null;
+};
+
 export const verifyJWTToken = (token: string, tokenType?: string) => {
   const secret =
     tokenType === "refresh"
       ? process.env.REFRESH_SECRET
-      : tokenType === "temporary"
+      : tokenType === "password_reset"
       ? process.env.TEMP_SECRET
       : process.env.ACCESS_SECRET;
 

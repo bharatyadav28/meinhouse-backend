@@ -10,3 +10,5 @@ export {
 } from "../@entities/comp_services_req/comp_services_req.model";
 export { Query } from "../@entities/query/query.model";
 export { Pages, pagesStatusEnum } from "../@entities/pages/pages.model";
+export { Education } from "../@entities/education/education.model";
+export { AuthToken } from "../@entities/auth_token/auth_token.model";

@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 
 export const cdnURL = "https://dev-carenest.s3.ap-south-1.amazonaws.com";
+export const adminPanelURL = "http://localhost:3000";
 
 export const getTokenPayload = (userId: string) => {
   return { user: { id: userId } };

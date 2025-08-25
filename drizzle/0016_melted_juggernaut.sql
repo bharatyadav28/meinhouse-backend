@@ -1,0 +1,1 @@
+ALTER TABLE "education" ALTER COLUMN "heading" SET DATA TYPE text;
