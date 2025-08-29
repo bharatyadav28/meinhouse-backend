@@ -50,13 +50,15 @@ export const getResetPasswordHTML = (
   role: string
 ) => {
   const frontend_url =
-    role === "admin" ? adminPanelURL : process.env.FRONTEND_URL;
+    role === "admin"
+      ? `${adminPanelURL}/auth/set-new-password`
+      : process.env.FRONTEND_URL;
 
   const body = `
     <div>
       <h1>Reset Your Password</h1>
       <p>Please click the link below to reset your password:</p>
-      <a href="${frontend_url}/reset-password?token=${token}">Reset Password</a>
+      <a href="${frontend_url}?token=${token}">Reset Password</a>
     </div>
   `;
 

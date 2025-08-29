@@ -60,9 +60,6 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
     type: "password_reset",
   });
 
-  // Send email with reset link
-  const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
-
   await sendEmail({
     to: user[0].email,
     subject: "Password Reset",
