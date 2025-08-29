@@ -4,7 +4,7 @@ import { db } from "../../db";
 import { User } from "./user.model";
 import { Role } from "../role";
 import { CreateUserType } from "../../types/user-types";
-import { comparePassword, hashPassword } from "../../helpers/passwordEncrpt";
+import { comparePassword, getHashPassword } from "../../helpers/passwordEncrpt";
 import {
   BadRequestError,
   NotFoundError,
@@ -21,7 +21,7 @@ export const createUser = async (data: CreateUserType, roleName: string) => {
   const [role] = await db.select().from(Role).where(eq(Role.name, roleName));
 
   const password = data?.password;
-  const hashedPassword = await hashPassword(password);
+  const hashedPassword = await getHashPassword(password);
   const modifiedData = {
     ...data,
     email: data.email.toLocaleLowerCase(),
