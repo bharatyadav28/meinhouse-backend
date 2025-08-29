@@ -12,3 +12,7 @@ export { Query } from "../@entities/query/query.model";
 export { Pages, pagesStatusEnum } from "../@entities/pages/pages.model";
 export { Education } from "../@entities/education/education.model";
 export { AuthToken } from "../@entities/auth_token/auth_token.model";
+export {
+  Services,
+  serviceStatusEnum,
+} from "../@entities/service/service.model";

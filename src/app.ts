@@ -51,6 +51,7 @@ import { pagesRouter } from "./@entities/pages";
 import { educationRouter } from "./@entities/education";
 import { getNewAccessToken } from "./middlewares/auth";
 import { tokenRouter } from "./@entities/auth_token";
+import { serviceRouter } from "./@entities/service";
 
 app.use((req, res, next) => {
   if (req.method === "POST" || req.method === "PUT") {
@@ -71,6 +72,7 @@ app.use("/api/v1/query", queryRouter);
 app.use("/api/v1/pages", pagesRouter);
 app.use("/api/v1/education", educationRouter);
 app.use("/api/v1/token", tokenRouter);
+app.use("/api/v1/services", serviceRouter);
 
 app.get("/api/v1/new-access-token", getNewAccessToken);
 
