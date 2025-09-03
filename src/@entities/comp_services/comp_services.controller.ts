@@ -5,6 +5,7 @@ import { BadRequestError } from "../../errors";
 import { db } from "../../db";
 import { CompServices } from "./comp_services.model";
 import { getURLPath } from "../../helpers/utils";
+import { and } from "drizzle-orm";
 
 export const createCompService = async (req: Request, res: Response) => {
   const { picPath, name, description } = req.body;
@@ -32,7 +33,6 @@ export const getCompServices = async (req: Request, res: Response) => {
       id: CompServices.id,
       picPath: CompServices.picPath,
       name: CompServices.name,
-      description: CompServices.description,
     })
     .from(CompServices)
     .where(eq(CompServices.isDeleted, false));
@@ -42,6 +42,34 @@ export const getCompServices = async (req: Request, res: Response) => {
     message: "Services retrieved successfully",
     data: {
       services,
+    },
+  });
+};
+
+export const getCompServiceDetails = async (req: Request, res: Response) => {
+  const serviceId = req.params.id;
+
+  const service = await db
+    .select({
+      id: CompServices.id,
+      picPath: CompServices.picPath,
+      name: CompServices.name,
+      description: CompServices.description,
+    })
+    .from(CompServices)
+    .where(
+      and(eq(CompServices.id, serviceId), eq(CompServices.isDeleted, false))
+    );
+
+  if (!service || service.length === 0) {
+    throw new Error("Service not found");
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Service retrieved successfully",
+    data: {
+      service: service[0],
     },
   });
 };

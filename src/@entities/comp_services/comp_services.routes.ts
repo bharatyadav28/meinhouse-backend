@@ -6,6 +6,7 @@ import {
   getCompServices,
   updateCompService,
   deleteCompService,
+  getCompServiceDetails,
 } from "./comp_services.controller";
 
 const compServicesRouter = express.Router();
@@ -17,6 +18,7 @@ compServicesRouter
 
 compServicesRouter
   .route("/:id")
+  .get(getCompServiceDetails)
   .put(isAdmin, updateCompService)
   .delete(isAdmin, deleteCompService);
 
