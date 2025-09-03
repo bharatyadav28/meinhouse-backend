@@ -1,18 +1,20 @@
 import { Request, Response } from "express";
 
-import { verifyEmailPass } from "../user/user.service";
+import { saveSession, verifyEmailPass } from "../user/user.service";
 import { s3Uploadv4 } from "../../helpers/s3";
 import { BadRequestError } from "../../errors";
 import { cdnURL } from "../../helpers/utils";
 
 export const adminSignin = async (req: Request, res: Response) => {
-  const { email, password } = req.cleanBody;
+  const { email, password } = req.body;
 
-  const { accessToken, refreshToken } = await verifyEmailPass(
+  const { accessToken, refreshToken, user } = await verifyEmailPass(
     email,
     password,
     "admin"
   );
+
+  if (refreshToken) await saveSession(req, user.id, refreshToken);
 
   return res.status(200).json({
     success: true,

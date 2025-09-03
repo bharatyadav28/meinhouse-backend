@@ -6,7 +6,14 @@ import { BadRequestError, UnauthenticatedError } from "../errors";
 import { generateAccessToken, verifyJWTToken } from "../helpers/jwt";
 import { getTokenPayload } from "../helpers/utils";
 import { db } from "../db";
-import { User } from "../db/schema";
+import { User, Sessions } from "../@entities/user/user.model";
+
+export const isUser = async (req: Request, _: Response, next: NextFunction) => {
+  const authHeader = req.headers["authorization"];
+  const existingUser = await getAuthUser(authHeader, "user");
+  req.user = existingUser;
+  next();
+};
 
 export const isAdmin = async (
   req: Request,
@@ -35,12 +42,22 @@ export const getNewAccessToken = async (req: Request, res: Response) => {
     const existingUser = await db
       .select()
       .from(User)
-      .where(and(eq(User.id, userId), eq(User.isDeleted, false)))
+      .innerJoin(Sessions as any, eq(User.id, Sessions.userId))
+      .where(
+        and(
+          eq(User.id, userId),
+          eq(User.isDeleted, false),
+          eq(Sessions.refreshToken, refreshToken)
+        )
+      )
+
       .limit(1);
 
     if (!existingUser || existingUser.length === 0 || !exp) {
-      throw new BadRequestError("User not found");
+      throw new BadRequestError("Session  expired");
     }
+
+    console.log("existingUser", existingUser);
 
     const hasTokenExpired = Date.now() >= exp * 1000;
     if (hasTokenExpired) {

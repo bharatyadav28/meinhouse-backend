@@ -1,7 +1,8 @@
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq, ne, sql } from "drizzle-orm";
+import { Request } from "express";
 
 import { db } from "../../db";
-import { User } from "./user.model";
+import { Sessions, User } from "./user.model";
 import { Role } from "../role";
 import { CreateUserType } from "../../types/user-types";
 import { comparePassword, getHashPassword } from "../../helpers/passwordEncrpt";
@@ -16,6 +17,8 @@ import {
   verifyJWTToken,
 } from "../../helpers/jwt";
 import { getTokenPayload } from "../../helpers/utils";
+import useragent from "useragent";
+import id from "zod/v4/locales/id.js";
 
 export const createUser = async (data: CreateUserType, roleName: string) => {
   const [role] = await db.select().from(Role).where(eq(Role.name, roleName));
@@ -53,7 +56,7 @@ export const verifyEmailPass = async (
     .innerJoin(Role as any, eq(User.roleId, Role.id))
     .where(
       and(
-        eq(User.email, email.toLocaleLowerCase()),
+        eq(User.email, email.toLocaleLowerCase().trim()),
         eq(User.isDeleted, false),
         eq(Role.name, role)
       )
@@ -65,14 +68,17 @@ export const verifyEmailPass = async (
   }
 
   const hashedPassword = existingUser[0].password;
-  const isPasswordValid = await comparePassword(password, hashedPassword);
+  const isPasswordValid = await comparePassword(
+    password.trim(),
+    hashedPassword
+  );
   if (!isPasswordValid) {
     throw new BadRequestError("Password is incorrect");
   }
 
   const { accessToken, refreshToken } = getUserTokens(existingUser[0].id);
 
-  return { accessToken, refreshToken };
+  return { accessToken, refreshToken, user: existingUser[0] };
 };
 
 export const getUserTokens = (userId: string) => {
@@ -80,6 +86,32 @@ export const getUserTokens = (userId: string) => {
   const accessToken = generateAccessToken(payload);
   const refreshToken = generateRefreshToken(payload);
   return { accessToken, refreshToken };
+};
+
+export const saveSession = async (
+  req: Request,
+  userId: string,
+  refreshToken: string
+) => {
+  const agent = useragent.parse(req.headers["user-agent"]);
+  const os = agent.os.toString();
+  const browser = agent.toAgent();
+  const ipAddress =
+    (Array.isArray(req.headers["x-forwarded-for"])
+      ? req.headers["x-forwarded-for"][0]
+      : req.headers["x-forwarded-for"]) ||
+    req.ip ||
+    req.connection?.remoteAddress ||
+    "";
+
+  const session = await db.insert(Sessions).values({
+    userId,
+    refreshToken,
+    os,
+    browser,
+    ipAddress,
+  });
+  return session;
 };
 
 export const getAuthUser = async (
@@ -122,4 +154,37 @@ export const getAuthUser = async (
   } else {
     throw new UnauthenticatedError("Invalid access token");
   }
+};
+
+export const getMySessions = async (userId: string, refreshToken: string) => {
+  const sessions = await db
+    .select({
+      id: Sessions.id,
+      os: Sessions.os,
+      browser: Sessions.browser,
+      ipAddress: Sessions.ipAddress,
+      createdAt: Sessions.createdAt,
+      isCurrentDevice: sql`(CASE
+                             WHEN ${Sessions.refreshToken} = ${refreshToken} 
+                             THEN True
+                             ELSE False
+                            END
+                              )`,
+    })
+    .from(Sessions)
+    .where(eq(Sessions.userId, userId))
+    .orderBy(desc(Sessions.createdAt));
+
+  return sessions;
+};
+
+export const sessionsLogoutService = async (
+  userId: string,
+  refreshToken: string
+) => {
+  await db
+    .delete(Sessions)
+    .where(
+      and(eq(Sessions.userId, userId), ne(Sessions.refreshToken, refreshToken))
+    );
 };

@@ -1,12 +1,76 @@
 import { Request, Response } from "express";
 
-import { createUser } from "./user.service";
+import {
+  createUser,
+  getMySessions,
+  saveSession,
+  sessionsLogoutService,
+  verifyEmailPass,
+} from "./user.service";
+import { BadRequestError } from "../../errors";
 
 export const signup = async (req: Request, res: Response) => {
-  await createUser(req.body, "user");
+  const data = req.cleanBody;
+
+  if (!data.mobile) {
+    throw new BadRequestError("Mobile number is required");
+  }
+
+  await createUser(data, "user");
 
   return res.status(201).json({
     success: true,
     message: "User signup successful",
+  });
+};
+
+export const signinUser = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+
+  const { accessToken, refreshToken, user } = await verifyEmailPass(
+    email,
+    password,
+    "user"
+  );
+
+  if (refreshToken) await saveSession(req, user.id, refreshToken);
+
+  return res.status(200).json({
+    success: true,
+    message: "User signin successful",
+    data: {
+      accessToken,
+      refreshToken,
+    },
+  });
+};
+
+export const getUserSessions = async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  const refreshToken = req.query.refreshToken;
+  if (!refreshToken || typeof refreshToken !== "string") {
+    throw new BadRequestError("Refresh token is required");
+  }
+
+  const sessions = await getMySessions(userId, refreshToken);
+
+  return res.status(200).json({
+    success: true,
+    message: "User sessions fetched successfully",
+    data: { sessions },
+  });
+};
+
+export const logoutFromOtherDevices = async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  const { refreshToken } = req.body;
+  if (!refreshToken || typeof refreshToken !== "string") {
+    throw new BadRequestError("Refresh token is required");
+  }
+  await sessionsLogoutService(userId, refreshToken);
+
+  return res.status(200).json({
+    success: true,
+    message: "Logged out from other devices successfully",
   });
 };
