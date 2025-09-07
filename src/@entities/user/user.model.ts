@@ -17,7 +17,7 @@ export const User = pgTable(
 
     name: varchar("name", { length: 255 }),
 
-    email: varchar("email", { length: 255 }).notNull().unique(),
+    email: varchar("email", { length: 255 }).notNull(),
 
     isEmailVerified: boolean("is_email_verified").notNull().default(false),
 

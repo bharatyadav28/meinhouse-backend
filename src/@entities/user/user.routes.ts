@@ -5,6 +5,8 @@ import {
   logoutFromOtherDevices,
   signinUser,
   signup,
+  deleteMyAccount,
+  changePassword,
 } from "./user.controller";
 import { validateData } from "../../middlewares/validation";
 import { createUserSchema } from "./user.model";
@@ -14,6 +16,11 @@ const userRouter = express.Router();
 
 userRouter.post("/signup", validateData(createUserSchema), signup);
 userRouter.post("/signin", signinUser);
+
+userRouter.put("/change-password", isUser, changePassword);
+
+userRouter.delete("/delete-account", isUser, deleteMyAccount);
+
 userRouter.get("/sessions", isUser, getUserSessions);
 userRouter.delete("/sessions", isUser, logoutFromOtherDevices);
 

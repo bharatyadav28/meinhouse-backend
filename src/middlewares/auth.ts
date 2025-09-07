@@ -57,8 +57,6 @@ export const getNewAccessToken = async (req: Request, res: Response) => {
       throw new BadRequestError("Session  expired");
     }
 
-    console.log("existingUser", existingUser);
-
     const hasTokenExpired = Date.now() >= exp * 1000;
     if (hasTokenExpired) {
       throw new BadRequestError("Your session is expired, please login");

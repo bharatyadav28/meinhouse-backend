@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 
 import {
+  changePasswordService,
   createUser,
+  deleteAccountService,
   getMySessions,
   saveSession,
   sessionsLogoutService,
@@ -72,5 +74,35 @@ export const logoutFromOtherDevices = async (req: Request, res: Response) => {
   return res.status(200).json({
     success: true,
     message: "Logged out from other devices successfully",
+  });
+};
+
+export const deleteMyAccount = async (req: Request, res: Response) => {
+  const userId = req.user.id;
+
+  await deleteAccountService(userId);
+  return res.status(200).json({
+    success: true,
+    message: "User account deleted successfully",
+  });
+};
+
+export const changePassword = async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  const { currentPassword, newPassword } = req.body;
+
+  if (!currentPassword.trim() || !newPassword.trim()) {
+    throw new BadRequestError("Both current and new passwords are required");
+  }
+
+  await changePasswordService(
+    userId,
+    currentPassword.trim(),
+    newPassword.trim()
+  );
+
+  return res.status(200).json({
+    success: true,
+    message: "Password changed successfully",
   });
 };

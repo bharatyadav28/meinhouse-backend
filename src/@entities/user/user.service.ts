@@ -18,10 +18,27 @@ import {
 } from "../../helpers/jwt";
 import { getTokenPayload } from "../../helpers/utils";
 import useragent from "useragent";
-import id from "zod/v4/locales/id.js";
 
 export const createUser = async (data: CreateUserType, roleName: string) => {
   const [role] = await db.select().from(Role).where(eq(Role.name, roleName));
+  if (!role) {
+    throw new NotFoundError("Role not found");
+  }
+
+  const existingUser = await db
+    .select()
+    .from(User)
+    .where(
+      and(
+        eq(User.email, data.email.toLocaleLowerCase().trim()),
+        eq(User.isDeleted, false)
+      )
+    )
+    .limit(1);
+
+  if (existingUser && existingUser.length > 0) {
+    throw new BadRequestError("Email already in use");
+  }
 
   const password = data?.password;
   const hashedPassword = await getHashPassword(password);
@@ -187,4 +204,54 @@ export const sessionsLogoutService = async (
     .where(
       and(eq(Sessions.userId, userId), ne(Sessions.refreshToken, refreshToken))
     );
+};
+
+export const deleteAccountService = async (userId: string) => {
+  const now = new Date();
+  const deletedAccount = await db
+    .update(User)
+    .set({ isDeleted: true, deletedAt: now, updatedAt: now })
+    .where(eq(User.id, userId))
+    .returning();
+
+  if (!deletedAccount || deletedAccount.length === 0) {
+    throw new Error("Account deletion failed");
+  }
+};
+
+export const changePasswordService = async (
+  userId: string,
+  currentPassword: string,
+  newPassword: string
+) => {
+  const existingUser = await db
+    .select({ password: User.password })
+    .from(User)
+    .where(and(eq(User.id, userId), eq(User.isDeleted, false)))
+    .limit(1);
+
+  if (!existingUser || existingUser.length === 0) {
+    throw new NotFoundError("User not found");
+  }
+
+  const hashedPassword = existingUser[0]?.password;
+  const isPasswordValid = await comparePassword(
+    currentPassword,
+    hashedPassword
+  );
+  if (!isPasswordValid) {
+    throw new BadRequestError("Current Password is incorrect");
+  }
+
+  const newHashedPassword = await getHashPassword(newPassword);
+
+  const updatedUser = await db
+    .update(User)
+    .set({ password: newHashedPassword, updatedAt: new Date() })
+    .where(eq(User.id, userId))
+    .returning();
+
+  if (!updatedUser || updatedUser.length === 0) {
+    throw new Error("Password update failed");
+  }
 };
