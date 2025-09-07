@@ -206,6 +206,19 @@ export const sessionsLogoutService = async (
     );
 };
 
+export const logoutService = async (userId: string, refreshToken: string) => {
+  const deletedSession = await db
+    .delete(Sessions)
+    .where(
+      and(eq(Sessions.userId, userId), eq(Sessions.refreshToken, refreshToken))
+    )
+    .returning();
+
+  if (!deletedSession || deletedSession.length === 0) {
+    throw new Error("Logout failed");
+  }
+};
+
 export const deleteAccountService = async (userId: string) => {
   const now = new Date();
   const deletedAccount = await db

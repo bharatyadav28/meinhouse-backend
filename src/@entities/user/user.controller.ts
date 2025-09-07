@@ -5,6 +5,7 @@ import {
   createUser,
   deleteAccountService,
   getMySessions,
+  logoutService,
   saveSession,
   sessionsLogoutService,
   verifyEmailPass,
@@ -77,7 +78,7 @@ export const logoutFromOtherDevices = async (req: Request, res: Response) => {
   });
 };
 
-export const deleteMyAccount = async (req: Request, res: Response) => {
+export const deleteUserAccount = async (req: Request, res: Response) => {
   const userId = req.user.id;
 
   await deleteAccountService(userId);
@@ -87,7 +88,7 @@ export const deleteMyAccount = async (req: Request, res: Response) => {
   });
 };
 
-export const changePassword = async (req: Request, res: Response) => {
+export const changeUserPassword = async (req: Request, res: Response) => {
   const userId = req.user.id;
   const { currentPassword, newPassword } = req.body;
 
@@ -104,5 +105,20 @@ export const changePassword = async (req: Request, res: Response) => {
   return res.status(200).json({
     success: true,
     message: "Password changed successfully",
+  });
+};
+
+export const logoutUser = async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  const { refreshToken } = req.body;
+  if (!refreshToken || typeof refreshToken !== "string") {
+    throw new BadRequestError("Refresh token is required");
+  }
+
+  await logoutService(userId, refreshToken);
+
+  return res.status(200).json({
+    success: true,
+    message: "Logged out successfully",
   });
 };
