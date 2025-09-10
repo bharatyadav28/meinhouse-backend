@@ -70,4 +70,5 @@ export const createUserSchema = z.object({
   mobile: z.string().max(15).trim().optional(),
   avatar: z.string().max(255).trim().optional(),
   password: z.string().max(255).trim(),
+  address: z.object().optional(),
 });

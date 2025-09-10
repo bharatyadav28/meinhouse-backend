@@ -12,7 +12,6 @@ import {
 import { validateData } from "../../middlewares/validation";
 import { createUserSchema } from "./user.model";
 import { isUser } from "../../middlewares/auth";
-import { logoutService } from "./user.service";
 
 const userRouter = express.Router();
 
