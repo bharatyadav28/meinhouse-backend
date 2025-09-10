@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "start": "node dist/server.js",
-    "build": "tsc",
+    "build": "node --max-old-space-size=4096 ./node_modules/.bin/tsc",
     "migrate:generate": "npx drizzle-kit generate",
     "migrate:apply": "npx drizzle-kit migrate",
     "migrate:dev": "npm run migrate:generate && npm run migrate:apply",
@@ -28,7 +28,7 @@
     "lodash": "^4.17.21",
     "morgan": "^1.10.0",
     "multer": "^2.0.2",
-    "nanoid": "^5.1.5",
+    "nanoid": "^3.3.7",
     "nodemailer": "^7.0.5",
     "pg": "^8.15.6",
     "sharp": "^0.34.3",
