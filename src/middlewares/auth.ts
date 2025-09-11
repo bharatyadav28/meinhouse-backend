@@ -15,6 +15,17 @@ export const isUser = async (req: Request, _: Response, next: NextFunction) => {
   next();
 };
 
+export const isProfessional = async (
+  req: Request,
+  _: Response,
+  next: NextFunction
+) => {
+  const authHeader = req.headers["authorization"];
+  const existingUser = await getAuthUser(authHeader, "professional");
+  req.user = existingUser;
+  next();
+};
+
 export const isAdmin = async (
   req: Request,
   _: Response,

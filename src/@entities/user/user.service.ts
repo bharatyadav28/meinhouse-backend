@@ -163,8 +163,10 @@ export const getAuthUser = async (
       )
       .limit(1);
 
+    console.log("Existing user: ", existingUser);
+
     if (!existingUser || existingUser.length === 0) {
-      throw new NotFoundError("User doesn't exist");
+      throw new UnauthenticatedError("User doesn't exist");
     }
 
     return existingUser?.[0];
