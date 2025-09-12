@@ -19,8 +19,6 @@ export const submitQuery = async (req: Request, res: Response) => {
 export const getAllQueries = async (req: Request, res: Response) => {
   const { page } = req.query;
 
-  console.log("page", page);
-
   const pageSize = 10;
   const pageNumber = page ? parseInt(page as string, 10) : 1;
   const skip = (pageNumber - 1) * pageSize;

@@ -8,10 +8,14 @@ import {
   deleteUserAccount,
   changeUserPassword,
   logoutUser,
+  updateUserProfile,
+  getUserProfile,
+  updateUserAvatar,
 } from "./user.controller";
 import { validateData } from "../../middlewares/validation";
 import { createUserSchema } from "./user.model";
 import { isUser } from "../../middlewares/auth";
+import { upload } from "../../helpers/s3";
 
 const userRouter = express.Router();
 
@@ -24,5 +28,14 @@ userRouter.delete("/delete-account", isUser, deleteUserAccount);
 
 userRouter.get("/sessions", isUser, getUserSessions);
 userRouter.delete("/sessions", isUser, logoutFromOtherDevices);
+
+userRouter
+  .route("/profile")
+  .put(isUser, updateUserProfile)
+  .get(isUser, getUserProfile);
+
+userRouter
+  .route("/avatar")
+  .put(isUser, upload.single("file"), updateUserAvatar);
 
 export default userRouter;

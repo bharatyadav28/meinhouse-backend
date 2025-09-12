@@ -16,4 +16,4 @@ export {
   Services,
   serviceStatusEnum,
 } from "../@entities/service/service.model";
-export { Address } from "../@entities/address/address.model";
+export { Address, addressTypeEnum } from "../@entities/address/address.model";

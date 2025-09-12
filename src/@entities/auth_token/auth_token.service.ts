@@ -17,8 +17,6 @@ export const getTokenReference = async (token: string, type: string) => {
 
   const userId = payload?.user?.id;
 
-  console.log("Payload:", payload);
-
   if (!payload || payload.type !== tokenType || !userId) {
     throw new BadRequestError("Invalid or expired reset token");
   }

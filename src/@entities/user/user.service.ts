@@ -16,8 +16,9 @@ import {
   generateRefreshToken,
   verifyJWTToken,
 } from "../../helpers/jwt";
-import { getTokenPayload } from "../../helpers/utils";
+import { getTokenPayload, getURLPath } from "../../helpers/utils";
 import useragent from "useragent";
+import { s3Uploadv4 } from "../../helpers/s3";
 
 export const createUser = async (data: CreateUserType, roleName: string) => {
   const [role] = await db.select().from(Role).where(eq(Role.name, roleName));
@@ -163,8 +164,6 @@ export const getAuthUser = async (
       )
       .limit(1);
 
-    console.log("Existing user: ", existingUser);
-
     if (!existingUser || existingUser.length === 0) {
       throw new UnauthenticatedError("User doesn't exist");
     }
@@ -269,4 +268,106 @@ export const changePasswordService = async (
   if (!updatedUser || updatedUser.length === 0) {
     throw new Error("Password update failed");
   }
+};
+
+export const updateProfileService = async (
+  userId: string,
+  profileData: { name: string; email: string; mobile: string }
+) => {
+  const { name, email, mobile } = profileData;
+  if (!name || !email || !mobile) {
+    throw new BadRequestError("Name, email and mobile are required");
+  }
+
+  const existingUserPromise = await db
+    .select()
+    .from(User)
+    .where(and(eq(User.id, userId), eq(User.isDeleted, false)))
+    .limit(1);
+
+  const existingEmailPromise = await db
+    .select()
+    .from(User)
+    .where(
+      and(
+        eq(User.email, profileData.email.toLocaleLowerCase().trim()),
+        eq(User.isDeleted, false)
+      )
+    )
+    .limit(1);
+
+  const [existingUser, existingEmail] = await Promise.all([
+    existingUserPromise,
+    existingEmailPromise,
+  ]);
+
+  if (!existingUser || existingUser.length === 0) {
+    throw new NotFoundError("User not found");
+  }
+
+  if (
+    existingEmail &&
+    existingEmail.length > 0 &&
+    existingEmail[0].id !== userId
+  ) {
+    throw new BadRequestError("Email already in use");
+  }
+
+  const updatedUser = await db
+    .update(User)
+    .set({
+      name: profileData.name.trim(),
+      email: profileData.email.toLocaleLowerCase().trim(),
+      mobile: profileData.mobile.trim(),
+      updatedAt: new Date(),
+    })
+    .where(eq(User.id, userId))
+    .returning();
+
+  if (!updatedUser || updatedUser.length === 0) {
+    throw new Error("Profile update failed");
+  }
+
+  return updatedUser?.[0];
+};
+
+export const getProfileService = async (userId: string) => {
+  const existingUser = await db
+    .select({
+      id: User.id,
+      name: User.name,
+      email: User.email,
+      mobile: User.mobile,
+      avatar: User.avatar,
+    })
+    .from(User)
+    .where(and(eq(User.id, userId), eq(User.isDeleted, false)));
+
+  if (!existingUser || existingUser.length === 0) {
+    throw new NotFoundError("User not found");
+  }
+
+  return existingUser?.[0];
+};
+
+export const updateAvatarService = async (
+  userId: string,
+  file: Express.Multer.File | undefined
+) => {
+  if (!file) {
+    throw new BadRequestError("Please upload an avatar image");
+  }
+  const uploadResult = await s3Uploadv4(file, "avatars");
+
+  const updatedUser = await db
+    .update(User)
+    .set({ avatar: getURLPath(uploadResult.Key), updatedAt: new Date() })
+    .where(eq(User.id, userId))
+    .returning();
+
+  if (!updatedUser || updatedUser.length === 0) {
+    throw new Error("Avatar update failed");
+  }
+
+  return updatedUser?.[0];
 };

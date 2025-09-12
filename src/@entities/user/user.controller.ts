@@ -5,9 +5,12 @@ import {
   createUser,
   deleteAccountService,
   getMySessions,
+  getProfileService,
   logoutService,
   saveSession,
   sessionsLogoutService,
+  updateAvatarService,
+  updateProfileService,
   verifyEmailPass,
 } from "./user.service";
 import { BadRequestError } from "../../errors";
@@ -120,5 +123,46 @@ export const logoutUser = async (req: Request, res: Response) => {
   return res.status(200).json({
     success: true,
     message: "Logged out successfully",
+  });
+};
+
+export const updateUserProfile = async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  const profileData = req.body;
+  // const { address, ...profileData } = req.body;
+
+  // if (!address) {
+  //   throw new BadRequestError("Address is required");
+  // }
+
+  await updateProfileService(userId, profileData);
+
+  return res.status(200).json({
+    success: true,
+    message: "User profile updated successfully",
+  });
+};
+
+export const getUserProfile = async (req: Request, res: Response) => {
+  const userId = req.user.id;
+
+  const userProfile = await getProfileService(userId);
+
+  return res.status(200).json({
+    success: true,
+    message: "User profile fetched successfully",
+    data: { userProfile },
+  });
+};
+
+export const updateUserAvatar = async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  const file = req.file;
+
+  await updateAvatarService(userId, file);
+
+  return res.status(200).json({
+    success: true,
+    message: "User avatar updated successfully",
   });
 };

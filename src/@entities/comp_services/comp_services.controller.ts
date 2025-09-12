@@ -93,8 +93,6 @@ export const updateCompService = async (req: Request, res: Response) => {
     throw new Error("Failed to update company service");
   }
 
-  console.log("Service", service);
-
   res.status(200).json({
     success: true,
     message: "Service updated successfully",

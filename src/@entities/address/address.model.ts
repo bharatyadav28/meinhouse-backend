@@ -1,7 +1,15 @@
 import { pgTable, varchar } from "drizzle-orm/pg-core";
 import { nanoid } from "nanoid";
 import { User } from "../user/user.model";
-import { integer } from "drizzle-orm/pg-core";
+import { integer, pgEnum } from "drizzle-orm/pg-core";
+import z from "zod";
+import { line } from "drizzle-orm/pg-core";
+import { boolean } from "drizzle-orm/pg-core";
+export const addressTypeEnum = pgEnum("address_type", [
+  "home",
+  "work",
+  "other",
+]);
 
 export const Address = pgTable("address", {
   id: varchar("id", { length: 21 })
@@ -25,9 +33,24 @@ export const Address = pgTable("address", {
 
   zipcode: integer("zipcode").notNull(),
 
-  isDefault: varchar("is_default", { length: 5 }).notNull().default("false"),
+  isDefault: boolean("is_default").notNull().default(false),
 
   latitude: varchar("latitude", { length: 50 }),
 
   longitude: varchar("longitude", { length: 50 }),
+
+  type: addressTypeEnum("type").default("home"),
+});
+
+export const createAddressSchema = z.object({
+  line1: z.string().max(255),
+  line2: z.string().max(255).optional(),
+  city: z.string().max(100),
+  state: z.string().max(100),
+  country: z.string().max(100),
+  zipcode: z.number().int().positive(),
+  isDefault: z.boolean().optional(),
+  latitude: z.string().max(50).optional(),
+  longitude: z.string().max(50).optional(),
+  type: z.enum(["home", "work", "other"]).optional(),
 });

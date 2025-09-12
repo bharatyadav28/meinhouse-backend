@@ -60,8 +60,6 @@ export const updateHomeCarousalItem = async (req: Request, res: Response) => {
     title,
   };
 
-  console.log("Image path", imagePath);
-
   const updatedItem = await db
     .update(Carousal)
     .set(data)
